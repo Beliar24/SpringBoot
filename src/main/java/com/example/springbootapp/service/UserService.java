@@ -1,29 +1,40 @@
 package com.example.springbootapp.service;
 
-import com.example.springbootapp.model.User;
+import com.example.springbootapp.dao.User;
+
 import com.example.springbootapp.repository.UserRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class UserService {
 
     private final UserRepository userRepository;
 
-    @Autowired
-    public UserService(UserRepository userRepository) {
-        this.userRepository = userRepository;
+    public UserService(UserRepository userRepositoryI) {
+        this.userRepository = userRepositoryI;
     }
 
     public void createUser(User user){
-        userRepository.createUser(user);
-    }
-
-    public User getUser(String name) {
-        return userRepository.getUser(name);
+        userRepository.save(user);
     }
 
     public User getUserById(long id) {
-        return userRepository.getUserById(id);
+        Optional<User> user = userRepository.findById(id);
+        return user.orElse(null);
+    }
+
+    public List<User> getUsers() {
+        return userRepository.findAll().stream().toList();
+    }
+
+    public User deleteUser(long id) {
+        Optional<User> user = userRepository.findById(id);
+        User tmp = user.orElse(null);
+        assert tmp != null;
+        userRepository.delete(tmp);
+        return tmp;
     }
 }

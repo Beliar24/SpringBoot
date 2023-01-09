@@ -1,34 +1,40 @@
 package com.example.springbootapp.service;
 
-import com.example.springbootapp.model.Ticket;
+import com.example.springbootapp.dao.Ticket;
 import com.example.springbootapp.repository.TicketRepository;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
-import javax.transaction.Transactional;
+import java.util.List;
+import java.util.Optional;
 
 @Service
 public class TicketService {
 
     private final TicketRepository ticketRepository;
 
-    @Autowired
+
     public TicketService(TicketRepository ticketRepository) {
         this.ticketRepository = ticketRepository;
     }
 
-    @Transactional
-    public void createTicket(Ticket ticket) {
-        ticketRepository.createTicket(ticket);
+    public void createTicket(Ticket ticket){
+        ticketRepository.save(ticket);
     }
 
-    @Transactional
-    public Ticket getTicket(Long id) {
-        return ticketRepository.getTicket(id);
+    public Ticket getTicketById(long id) {
+        Optional<Ticket> ticket = ticketRepository.findById(id);
+        return ticket.orElse(null);
     }
 
-    @Transactional
-    public void cancelTicket(Ticket ticket) {
-        ticketRepository.cancelTicket(ticket);
+    public List<Ticket> getTickets() {
+        return ticketRepository.findAll().stream().toList();
+    }
+
+    public Ticket deleteTicket(long id) {
+        Optional<Ticket> ticket = ticketRepository.findById(id);
+        Ticket tmp = ticket.orElse(null);
+        assert tmp != null;
+        ticketRepository.delete(tmp);
+        return tmp;
     }
 }

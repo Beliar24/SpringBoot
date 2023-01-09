@@ -1,35 +1,44 @@
 package com.example.springbootapp.controller;
 
-import com.example.springbootapp.dao.TicketImpl;
-import com.example.springbootapp.facade.BookingFacade;
-import com.example.springbootapp.model.Ticket;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.springbootapp.dao.Event;
+import com.example.springbootapp.dao.Ticket;
+import com.example.springbootapp.dao.User;
+import com.example.springbootapp.facade.Booking;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/tickets")
 public class TicketController {
 
-    private final BookingFacade bookingFacade;
+    private final Booking booking;
 
-    @Autowired
-    public TicketController(BookingFacade bookingFacade) {
-        this.bookingFacade = bookingFacade;
+    public TicketController(Booking booking) {
+        this.booking = booking;
     }
 
-    @PostMapping("/create")
-    public void createTicket(@RequestBody TicketImpl ticket) {
-        bookingFacade.createTicket(ticket);
+    @PostMapping("/user/{user_id}/event/{event_id}/create")
+    public void createTicket(@PathVariable long user_id, @PathVariable long event_id, @RequestBody Ticket ticket) {
+        Event event = booking.getEventById(event_id);
+        User user = booking.getUserById(user_id);
+        ticket.setEvent_id(event);
+        ticket.setUser_id(user);
+        booking.createTicket(ticket);
     }
 
     @GetMapping("/get/{id}")
     public Ticket getTicket(@PathVariable long id) {
-        return bookingFacade.getBookedTickets(id);
+        return booking.getTicketById(id);
     }
 
-    @DeleteMapping("/cancel/{id}")
-    public void deleteTicket(@PathVariable long id) {
-        Ticket ticket = bookingFacade.getBookedTickets(id);
-        bookingFacade.cancelTicket(ticket);
+    @GetMapping("/get")
+    public List<Ticket> getTickets() {
+        return booking.getTickets();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public Ticket deleteTicketById(@PathVariable long id) {
+        return booking.deleteTicket(id);
     }
 }

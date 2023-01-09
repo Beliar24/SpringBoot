@@ -1,29 +1,38 @@
 package com.example.springbootapp.controller;
 
-import com.example.springbootapp.dao.UserImpl;
-import com.example.springbootapp.facade.BookingFacade;
-import com.example.springbootapp.model.User;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.example.springbootapp.dao.User;
+import com.example.springbootapp.facade.Booking;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/users")
 public class UserController {
 
-    private final BookingFacade bookingFacade;
+    private final Booking booking;
 
-    @Autowired
-    public UserController(BookingFacade bookingFacade) {
-        this.bookingFacade = bookingFacade;
+    public UserController(Booking booking) {
+        this.booking = booking;
     }
 
     @PostMapping("/create")
-    public void createUser(@RequestBody UserImpl user) {
-        bookingFacade.createUser(user);
+    public void createUser(@RequestBody User user) {
+        booking.createUser(user);
     }
 
     @GetMapping("/get/{id}")
     public User getUser(@PathVariable long id) {
-        return bookingFacade.getUserById(id);
+        return booking.getUserById(id);
+    }
+
+    @GetMapping("/get")
+    public List<User> getUsers() {
+        return booking.getUsers();
+    }
+
+    @DeleteMapping("/delete/{id}")
+    public User deleteUserById(@PathVariable long id) {
+        return booking.deleteUser(id);
     }
 }
