@@ -6,11 +6,14 @@ import com.example.springbootapp.dao.User;
 import com.example.springbootapp.service.EventService;
 import com.example.springbootapp.service.TicketService;
 import com.example.springbootapp.service.UserService;
-import org.springframework.stereotype.Component;
+import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
+import java.util.Optional;
 
-@Component
+@Service
+@Transactional
 public class Booking implements Facade{
 
     private final UserService userService;
@@ -26,12 +29,12 @@ public class Booking implements Facade{
     }
 
     @Override
-    public void createUser(User user) {
-        userService.createUser(user);
+    public User createUser(User user) {
+        return userService.createUser(user);
     }
 
     @Override
-    public User getUserById(long id) {
+    public Optional<User> getUserById(long id) {
         return userService.getUserById(id);
     }
 
@@ -46,12 +49,12 @@ public class Booking implements Facade{
     }
 
     @Override
-    public void createEvent(Event event) {
-        eventService.createEvent(event);
+    public Event createEvent(Event event) {
+        return eventService.createEvent(event);
     }
 
     @Override
-    public Event getEventById(long id) {
+    public Optional<Event> getEventById(long id) {
         return eventService.getEventById(id);
     }
 
@@ -61,17 +64,17 @@ public class Booking implements Facade{
     }
 
     @Override
-    public Event deleteEvent(long id) {
-        return eventService.deleteEvent(id);
+    public void deleteEvent(long id) {
+        eventService.deleteEvent(id);
     }
 
     @Override
-    public void createTicket(Ticket ticket) {
-        ticketService.createTicket(ticket);
+    public Ticket createTicket(Ticket ticket, Long user_id, Long event_id) {
+        return ticketService.createTicket(ticket, user_id, event_id);
     }
 
     @Override
-    public Ticket getTicketById(long id) {
+    public Optional<Ticket> getTicketById(long id) {
         return ticketService.getTicketById(id);
     }
 
@@ -81,7 +84,7 @@ public class Booking implements Facade{
     }
 
     @Override
-    public Ticket deleteTicket(long id) {
-        return ticketService.deleteTicket(id);
+    public void deleteTicket(long id) {
+        ticketService.deleteTicket(id);
     }
 }

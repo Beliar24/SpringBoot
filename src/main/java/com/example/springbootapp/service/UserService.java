@@ -5,10 +5,12 @@ import com.example.springbootapp.dao.User;
 import com.example.springbootapp.repository.UserRepository;
 import org.springframework.stereotype.Service;
 
+import javax.transaction.Transactional;
 import java.util.List;
 import java.util.Optional;
 
 @Service
+@Transactional
 public class UserService {
 
     private final UserRepository userRepository;
@@ -17,17 +19,16 @@ public class UserService {
         this.userRepository = userRepositoryI;
     }
 
-    public void createUser(User user){
-        userRepository.save(user);
+    public User createUser(User user){
+        return userRepository.save(user);
     }
 
-    public User getUserById(long id) {
-        Optional<User> user = userRepository.findById(id);
-        return user.orElse(null);
+    public Optional<User> getUserById(long id) {
+        return userRepository.findById(id);
     }
 
     public List<User> getUsers() {
-        return userRepository.findAll().stream().toList();
+        return userRepository.findAll();
     }
 
     public User deleteUser(long id) {

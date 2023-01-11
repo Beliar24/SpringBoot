@@ -1,12 +1,13 @@
 package com.example.springbootapp.controller;
 
-import com.example.springbootapp.dao.Event;
 import com.example.springbootapp.dao.Ticket;
-import com.example.springbootapp.dao.User;
 import com.example.springbootapp.facade.Booking;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Optional;
 
 @RestController
 @RequestMapping("/tickets")
@@ -19,26 +20,42 @@ public class TicketController {
     }
 
     @PostMapping("/user/{user_id}/event/{event_id}/create")
-    public void createTicket(@PathVariable long user_id, @PathVariable long event_id, @RequestBody Ticket ticket) {
-        Event event = booking.getEventById(event_id);
-        User user = booking.getUserById(user_id);
-        ticket.setEvent_id(event);
-        ticket.setUser_id(user);
-        booking.createTicket(ticket);
+    public ResponseEntity<Ticket> createTicket(@PathVariable long user_id, @PathVariable long event_id, @RequestBody Ticket ticket) {
+        try {
+            Ticket ticketTmp = booking.createTicket(ticket, user_id, event_id);
+            return new ResponseEntity<>(ticketTmp, HttpStatus.CREATED);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 
     @GetMapping("/get/{id}")
-    public Ticket getTicket(@PathVariable long id) {
-        return booking.getTicketById(id);
+    public ResponseEntity<Ticket> getTicket(@PathVariable long id) {
+        Optional<Ticket> ticketData = booking.getTicketById(id);
+        return ticketData.map(ticket -> new ResponseEntity<>(ticket, HttpStatus.OK)).orElseGet(() ->
+                new ResponseEntity<>(HttpStatus.NOT_FOUND));
     }
 
     @GetMapping("/get")
-    public List<Ticket> getTickets() {
-        return booking.getTickets();
+    public ResponseEntity<List<Ticket>> getTickets() {
+        try {
+            List<Ticket> tickets = booking.getTickets();
+            if (tickets.isEmpty()) {
+                return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+            }
+            return new ResponseEntity<>(tickets, HttpStatus.OK);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.INTERNAL_SERVER_ERROR);
+        }
     }
 
     @DeleteMapping("/delete/{id}")
-    public Ticket deleteTicketById(@PathVariable long id) {
-        return booking.deleteTicket(id);
+    public ResponseEntity<Ticket> deleteTicketById(@PathVariable long id) {
+        try {
+            booking.deleteTicket(id);
+            return new ResponseEntity<>(HttpStatus.NO_CONTENT);
+        } catch (Exception e) {
+            return new ResponseEntity<>(HttpStatus.NOT_FOUND);
+        }
     }
 }
