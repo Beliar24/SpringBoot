@@ -8,6 +8,9 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import javax.transaction.Transactional;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Objects;
 import java.util.Optional;
 
 @Service
@@ -20,12 +23,21 @@ public class UserDetailsServiceImpl implements UserDetailsService {
         this.userRepository = userRepository;
     }
 
-    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+    public List<User> getAll() {
+        return this.userRepository.findAll();
+    }
 
-        Optional<User> user = userRepository.findUserByUsername(username);
+    public User getByLogin(String login) {
+        Optional<User> user = userRepository.findUserByUsername(login);
+        return user.orElse(null);
+    }
 
-        user.orElseThrow(() -> new UsernameNotFoundException(username + " not found."));
-
-        return user.map(UserDetailsImpl::new).get();
+    @Override
+    public UserDetails loadUserByUsername(String login) throws UsernameNotFoundException {
+        User u = getByLogin(login);
+        if (Objects.isNull(u)) {
+            throw new UsernameNotFoundException(String.format("User %s is not found", login));
+        }
+        return new org.springframework.security.core.userdetails.User(u.getUsername(), u.getPassword(), true, true, true, true, new HashSet<>());
     }
 }
