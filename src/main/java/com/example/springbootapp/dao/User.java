@@ -14,7 +14,7 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "username")
     private String username;
@@ -31,4 +31,14 @@ public class User {
     @Column(name = "email")
     private String email;
 
+    public User(String username, String password, boolean is_active, String roles, String email) {
+        this.username = username;
+        this.password = password;
+        this.is_active = is_active;
+        this.roles = roles;
+        this.email = email;
+    }
+
+    public User() {
+    }
 }

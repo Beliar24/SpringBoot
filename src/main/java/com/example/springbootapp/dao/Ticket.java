@@ -30,5 +30,13 @@ public class Ticket {
     @Column(name = "category")
     private Locale.Category category;
 
+    public Ticket(Event event_id, User user_id, int place, Locale.Category category) {
+        this.event_id = event_id;
+        this.user_id = user_id;
+        this.place = place;
+        this.category = category;
+    }
 
+    public Ticket() {
+    }
 }

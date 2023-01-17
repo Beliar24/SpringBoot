@@ -23,4 +23,12 @@ public class Event {
 
     @Column(name = "date")
     private Date date;
+
+    public Event(String title, Date date) {
+        this.title = title;
+        this.date = date;
+    }
+
+    public Event() {
+    }
 }
